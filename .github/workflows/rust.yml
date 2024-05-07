@@ -1,0 +1,22 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "5_6_24", "5_7_24", "5_8_24" ]
+  pull_request:
+    branches: [ "5_6_24", "5_7_24", "5_8_24" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
