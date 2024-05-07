@@ -1,105 +1,79 @@
 
-// today I think we're going to make random values
-// https://rust-lang-nursery.github.io/rust-cookbook/algorithms/randomness.html
+// today I think we're going to sort vectors
+// https://rust-lang-nursery.github.io/rust-cookbook/algorithms/sorting.html
 
-use rand::Rng; // for randomness
-use text_io::read; // for reading user input
-use std::process::Command; // for sending console commands
-use std::{thread, time}; // for sleeping
 
-fn getu8() -> u8
+fn sortint()
 {
-    // create an initialized generator based on thread
-    let mut rng = rand::thread_rng();
+    // unsorted int vector
+    let mut vec: Vec<i32> = vec![6, 3, 5, 8, 1, 4];
 
-    // generate result based on generator
-    let result: u8 = rng.gen();
+    println!("unsorted int vec: {:?}", vec);
 
-    // return result
-    result
+    // sort int vector smallest to largest
+    vec.sort();
+
+    print!("sorted int vec: {:?} ", vec);
 }
 
-fn getu16() -> u16
+fn sortfloat()
 {
-    // create an initialized generator based on thread
-    let mut rng = rand::thread_rng();
+    // unsorted float vector
+    let mut vec: Vec<f64> = vec![1.1, 1.15, 5.5, 1.3, 4.3, 2.0];
 
-    // generate result based on generator
-    let result: u16 = rng.gen::<u16>();
+    println!("unsorted float vec: {:?}", vec);
 
-    // return result
-    result
+    // sort float vector smallest to largest
+    vec.sort_by(|a, b| a.partial_cmp(b).unwrap());
+
+    println!("sorted float vec: {:?}", vec);
 }
 
-fn getu32() -> u32
+// create person struct
+#[derive(Debug, Eq, Ord, PartialEq, PartialOrd)]
+struct Person
 {
-    // create an intialized generator based on thread
-    let mut rng = rand::thread_rng();
-
-    // generate result based on generator
-    let result: u32 = rng.gen::<u32>();
-
-    // return result
-    result
+    name: String,
+    age: u32
 }
 
-fn geti32() -> i32
+// implement a new function for the Person struct
+impl Person
 {
-    // create an initialized generator based on thread
-    let mut rng = rand::thread_rng();
-
-    // generate result based on generator
-    let result: i32 = rng.gen::<i32>();
-
-    // return result
-    result
-}
-
-fn getfloat() -> f64
-{
-    // create an initialized generator based on thread
-    let mut rng = rand::thread_rng();
-
-    // generate result based on generator
-    let result: f64 = rng.gen::<f64>();
-
-    // return result
-    result
-}
-
-fn clear()
-{
-    // if on windows
-    if cfg!(windows)
+    pub fn new(name: String, age: u32) -> Self 
     {
-        // send clear command to cmd
-        Command::new("cmd").args(["/c", "cls"]).spawn().expect("cls failed to start").wait().expect("failed to wait for cls");
-    }
-    else
-    {
-        // if on linux, send clear command
-        Command::new("clear").spawn().expect("clear command failed to start").wait().expect("failed to wait");
+        Person 
+        {
+            name,
+            age
+        }
     }
 }
-fn main() 
+
+fn sortstructs()
 {
-    // while(true)
-    loop
-    {
-        // print random
-        println!("random u8: {}", getu8());
-        println!("random u16: {}", getu16());
-        println!("random u32: {}", getu32());
-        println!("random i32: {}", geti32());
-        println!("random float: {}", getfloat());
+    // unsorted vector of people called couple
+    let mut couple: Vec<Person> = vec![Person::new("Sam".to_string(), 18), Person::new("Melody".to_string(), 19)];
 
-        // read user input
-        // let _input: String = read!("{}\n");
+    println!("unsorted couple: {} (age {}) | {} (age {})", couple[0].name, couple[0].age, couple[1].name, couple[1].age);
 
-        // wait 100 milliseconds
-        thread::sleep(time::Duration::from_millis(100));
+    // sort by derived natural order (name and age)
+    couple.sort();
 
-        // clear terminal
-        clear();
-    }
+    println!("derived sorted couple: {} (age {}) | {} (age {})", couple[0].name, couple[0].age, couple[1].name, couple[1].age);
+
+    // sort by age
+    couple.sort_by(|a, b| b.age.cmp(&a.age));
+
+    println!("sorted by age couple: {} (age {}) | {} (age {})", couple[0].name, couple[0].age, couple[1].name, couple[1].age);
+
+}
+
+fn main()
+{
+    sortint();
+    println!("\n");
+    sortfloat();
+    println!("\n");
+    sortstructs();
 }
