@@ -5,7 +5,6 @@
 use rand::Rng; // for randomness
 use text_io::read; // for reading user input
 use std::process::Command; // for sending console commands
-use std::{thread, time}; // for sleeping
 
 fn getu8() -> u8
 {
@@ -94,10 +93,7 @@ fn main()
         println!("random float: {}", getfloat());
 
         // read user input
-        // let _input: String = read!("{}\n");
-
-        // wait 100 milliseconds
-        thread::sleep(time::Duration::from_millis(100));
+        let _input: String = read!("{}\n");
 
         // clear terminal
         clear();
