@@ -1,50 +1,34 @@
 
-// today we are going to mess with ANSI colors
-// I didn't know ANSI colors were a thing on the terminal and that's super cool
+// NOT doing tar, working on something else
+// splits array to find max cocurrently with short-lived thread
 
-use ansi_term::{Color, Style};
-
-fn print_red(msg: &str)
+fn calculate_max(array: &[i32]) -> Option<i32> 
 {
-    print!("{}", Color::Red.paint(msg));
-}
+    const THRESHOLD: usize = 2;
 
-fn print_blue(msg: &str)
-{
-    print!("{}", Color::Blue.paint(msg))
-}
+    if array.len() <= THRESHOLD
+    {
+        return array.iter().cloned().max();
+    }
 
-fn print_green(msg: &str)
-{
-    print!("{}", Color::Green.paint(msg));
-}
+    let mid = array.len() / 2;
+    let (left, right) = array.split_at(mid);
 
-fn print_bold(msg: &str)
-{
-    print!("{}", Style::new().bold().paint(msg))
-}
+    crossbeam::scope(|s| {
+        let thread_left = s.spawn(|_| calculate_max(left));
+        let thread_right = s.spawn(|_| calculate_max(right));
 
-fn print_bold_and_red(msg: &str)
-{
-    print!("{}", Color::Red.bold().paint(msg));
+        let max_left = thread_left.join().unwrap();
+        let max_right = thread_right.join().unwrap();
+
+        Some(max_left.max(max_right)?)
+    }).unwrap()
 }
 
 fn main()
 {
-    println!("Hello World!\n");
-    println!("in red:");
-    print_red("Hello World");
-    println!("\n");
-    println!("in blue:");
-    print_blue("Hello World");
-    println!("\n");
-    println!("in green:");
-    print_green("Hello World");
-    println!("\n");
-    println!("in bold:");
-    print_bold("Hello World");
-    println!("\n");
-    println!("in bold and green:");
-    print_bold_and_red("Hello World");
-    println!("\n");
+    let array = &[1, 25, -4, 10];
+    let max = calculate_max(array);
+
+    assert_eq!(max, Some(25));
 }
