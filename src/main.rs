@@ -31,4 +31,6 @@ fn main()
     let max = calculate_max(array);
 
     assert_eq!(max, Some(25));
+
+    println!("success!");
 }
