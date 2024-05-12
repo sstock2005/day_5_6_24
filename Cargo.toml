@@ -1,7 +1,8 @@
 [package]
-name = "day_5_10_24"
+name = "day_5_12_24"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 crossbeam = "0.8.4"
+crossbeam-channel = "0.5.12"

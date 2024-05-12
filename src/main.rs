@@ -1,36 +1,58 @@
 
-// NOT doing tar, working on something else
-// splits array to find max cocurrently with short-lived thread
+// parallel pipelines today!
 
-fn calculate_max(array: &[i32]) -> Option<i32> 
-{
-    const THRESHOLD: usize = 2;
+// crates being used
+extern crate crossbeam;
+extern crate crossbeam_channel;
 
-    if array.len() <= THRESHOLD
-    {
-        return array.iter().cloned().max();
-    }
-
-    let mid = array.len() / 2;
-    let (left, right) = array.split_at(mid);
-
-    crossbeam::scope(|s| {
-        let thread_left = s.spawn(|_| calculate_max(left));
-        let thread_right = s.spawn(|_| calculate_max(right));
-
-        let max_left = thread_left.join().unwrap();
-        let max_right = thread_right.join().unwrap();
-
-        Some(max_left.max(max_right)?)
-    }).unwrap()
-}
+// imports
+use std::thread; // for threads
+use std::time::Duration; // for timers
+use crossbeam_channel::bounded; // to bind threads
 
 fn main()
 {
-    let array = &[1, 25, -4, 10];
-    let max = calculate_max(array);
+    // sender and reciever 1 and 2
+    let (snd1, rcv1) = bounded(1);
+    let (snd2, rcv2) = bounded(1);
+    
+    // messages and workers
+    let n_msgs = 4;
+    let n_workers = 2;
 
-    assert_eq!(max, Some(25));
+    crossbeam::scope(|s| {
+        // producer thread
+        s.spawn(|_| {
+            for i in 0..n_msgs {
+                snd1.send(i).unwrap();
+                println!("Source sent {}", i);
+            }
+            // close the channel
+            drop(snd1);
+        });
 
-    println!("success!");
+        // parallel processing by 2 threads
+        for _ in 0..n_workers {
+            // send to sink, recieve from source
+            let (sendr, recvr) = (snd2.clone(), rcv1.clone());
+
+            // spawn workers in seperate threads
+            s.spawn(move |_| {
+                thread::sleep(Duration::from_millis(500));
+                // recieve until channel closes
+                for msg in recvr.iter(){
+                    println!("worker {:?} recieved {}.", thread::current().id(), msg);
+                    sendr.send(msg * 2).unwrap();
+                }
+            });
+        }
+        // close the channel, otherwise the sink will never exit for-loop
+        drop(snd2);
+
+        // sink
+        for msg in rcv2.iter()
+        {
+            println!("sink recieved {}", msg);
+        }
+    }).unwrap();
 }
