@@ -1,26 +1,29 @@
 
-// today we are transmitting data between two pipelines!
+// today we are maintaining global mutable state
 
-use std::{thread, time};
-use crossbeam_channel::unbounded;
+use lazy_static::lazy_static;
+use std::sync::Mutex;
 
-fn main()
+lazy_static! {
+    static ref RINGS_OF_POWER: Mutex<Vec<String>> = Mutex::new(Vec::new());
+}
+
+fn insert(ring: &str) -> Result<(), &'static str> 
 {
-    let (snd, rcv) = unbounded();
-    let n_msgs = 5;
-    crossbeam::scope(|scope| {
-        scope.spawn(|_| {
-            for i in 0..n_msgs 
-            {
-                snd.send(i).unwrap(); // send message to reciever
-                thread::sleep(time::Duration::from_millis(100)); // wait 100 milliseconds
-            }
-        });
-    }).unwrap();
+    let mut db = RINGS_OF_POWER.lock().map_err(|_| "Failed to acquire MutexGuard")?;
+    db.push(ring.to_string());
+    Ok(())
+}
 
-    for _ in 0..n_msgs
+fn main() -> Result<(), &'static str> {
+    insert("Narya")?;
+    insert("Nenya")?;
+    insert("Vilya")?;
     {
-        let msg = rcv.recv().unwrap();
-        println!("Recieved {} from other pipeline!", msg);
+        let db = RINGS_OF_POWER.lock().map_err(|_| "Failed to acquire MutexGuard")?;
+
+        db.iter().enumerate().for_each(|(i, item)| println!("{}: {}", i, item));
     }
+    insert("The One")?;
+    Ok(())
 }
