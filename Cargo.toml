@@ -1,7 +1,11 @@
 [package]
-name = "day_5_20_24"
+name = "day_5_23_24"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-lazy_static = "1.4.0"
+num_cpus = "1.16.0"
+ring = "0.17.8"
+text_io = "0.1.12"
+threadpool = "1.8.1"
+walkdir = "2.5.0"
