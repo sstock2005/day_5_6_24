@@ -1,12 +1,11 @@
 ## Rust Daily
 A place to dump random projects based off of [the rust cookbook](https://rust-lang-nursery.github.io/rust-cookbook/).  
 
-## Day 7 (5-13-24)
-A simple program that shows how to transfer data between a spawned pipeline and host!  
+## Day 9 (5-23-24)
+A program to cocurrently calculate sha256 hashes of files in a directory.  
 
 **Showcase**  
-![image](https://github.com/sstock2005/rust-daily/assets/144393153/b7886809-b6d0-4606-9310-93206ead68eb)
-
+no showcase
 
 **Credit**  
-This project was inspired by [the rust cookbook explicit threads page](https://rust-lang-nursery.github.io/rust-cookbook/concurrency/threads.html#pass-data-between-two-threads).
+This project was inspired by [the rust cookbook explicit threads page](https://rust-lang-nursery.github.io/rust-cookbook/concurrency/threads.html#calculate-sha256-sum-of-iso-files-concurrently).
